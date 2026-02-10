@@ -12,8 +12,9 @@ const app = express();
 const PORT = process.env.PORT || 8001;
 app.use(
   cors({
-    origin: "*",
-    credentials: true,
+    origin: [
+      "https://agas-exam-app.netlify.app",
+    ],
   }),
 );
 app.use(express.json());
