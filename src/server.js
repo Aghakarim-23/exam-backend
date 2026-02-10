@@ -4,15 +4,18 @@ import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import questionRoutes from "./routes/questionRoutes.js";
 
-
 dotenv.config();
 
 connectDB();
 
-
 const app = express();
 const PORT = process.env.PORT || 8001;
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 app.get("/", (req, res) => {
