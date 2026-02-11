@@ -14,6 +14,7 @@ app.use(
   cors({
     origin: [
       "https://agas-exam-app.netlify.app",
+      "http://localhost:5173",
     ],
   }),
 );
