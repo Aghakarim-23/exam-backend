@@ -24,6 +24,10 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
+app.get("/api/keep-alive", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 app.use("/api/questions", questionRoutes);
 
 app.listen(PORT, () => {
