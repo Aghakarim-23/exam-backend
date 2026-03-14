@@ -34,8 +34,7 @@ export const register = async (req, res) => {
         username: newUser.username,
         email: newUser.email,
         role: newUser.role,
-      },
-      token,
+      }
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -64,7 +63,7 @@ export const login = async (req, res) => {
       httpOnly: true,
       secure: false, 
       sameSite: "strict",
-      maxAge: 60 * 60 * 1000 // 1 hour
+      maxAge: 60 * 60 * 1000 
     });
 
     res.json({
@@ -75,8 +74,7 @@ export const login = async (req, res) => {
         username: user.username,
         email: user.email,
         role: user.role,
-      },
-      token,
+      }
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
