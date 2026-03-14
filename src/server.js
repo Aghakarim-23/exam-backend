@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import questionRoutes from "./routes/questionRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config();
 
@@ -29,6 +30,8 @@ app.get("/api/keep-alive", (req, res) => {
 });
 
 app.use("/api/questions", questionRoutes);
+app.use("/api/auth", authRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
