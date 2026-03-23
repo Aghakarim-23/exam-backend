@@ -1,42 +1,65 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { sendEmail } from "../utils/sendEmail.js";
 
 export const register = async (req, res) => {
   try {
     const { name, username, email, password } = req.body;
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "Bu email artıq istifadə olunur" });
-    }
+
+    const existed = await User.findOne({ email });
+    if (existed)
+      return res.status(400).json({ message: "Bu email artıq mövcuddur" });
+
+    const existedUsername = await User.findOne({ username });
+    if (existedUsername)
+      return res
+        .status(400)
+        .json({ message: "Bu istifadəçi adı artıq mövcuddur" });
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new User({
+    const newUser = await User.create({
       name,
       username,
       email,
       password: hashedPassword,
+      emailVerifyToken: null,
+      isVerified: false,
     });
-    await newUser.save();
 
-    const token = jwt.sign(
-      { userId: newUser._id, role: newUser.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" },
+    const verifyToken = jwt.sign(
+      { userId: newUser._id },
+      process.env.EMAIL_SECRET,
+      { expiresIn: "15m" },
     );
 
+    const verifyLink = `${process.env.CLIENT_URL}/verify-email/${verifyToken}`;
+
+    await sendEmail({
+      to: newUser.email,
+      subject: "Email ünvanınızı təsdiqləyin",
+      html: `
+    <div style="font-family: Arial; background:#f3f4f6; padding:40px;">
+      <div style="max-width:520px; margin:0 auto; background:#fff; padding:32px; text-align:center; border-radius:12px;">
+        <h2>Email ünvanınızı təsdiqləyin</h2>
+        <p>Emailinizi təsdiqləmək üçün aşağıdakı düyməyə klik edin:</p>
+        <a href="${verifyLink}" style="display:inline-block; padding:12px 24px; background:#16a34a; color:#fff; border-radius:8px; text-decoration:none;">
+          Emaili təsdiqlə
+        </a>
+        <p style="margin-top:16px; font-size:12px; color:#9ca3af;">
+          Bu link 15 dəqiqədən sonra etibarsız olacaq.
+        </p>
+      </div>
+    </div>
+  `,
+    });
     res.status(201).json({
-      message: "Qeydiyyat uğurla tamamlandı",
-      user: {
-        id: newUser._id,
-        name: newUser.name,
-        username: newUser.username,
-        email: newUser.email,
-        role: newUser.role,
-      },
+      message: "Qeydiyyat tamamlandı! Zəhmət olmasa emailinizi təsdiqləyin.",
     });
   } catch (error) {
-    res.status(500).json({ message: "Serverdə xəta baş verdi" });
+    console.error("❌ Register error:", error);
+    res.status(500).json({ message: "Server xətası baş verdi" });
   }
 };
 
@@ -49,6 +72,13 @@ export const login = async (req, res) => {
         .status(400)
         .json({ message: "Hesab tapılmadı. Zəhmət olmasa emaili yoxlayın" });
     }
+
+    if (!user.isVerified) {
+      return res
+        .status(400)
+        .json({ message: "Emailinizi təsdiqləyin ki, daxil ola biləsiniz" });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res
@@ -69,7 +99,7 @@ export const login = async (req, res) => {
     });
 
     res.json({
-      message: "Login successful",
+      message: "Uğurlu giriş!",
       user: {
         id: user._id,
         name: user.name,
@@ -80,5 +110,19 @@ export const login = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const confirmEmail = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const payload = jwt.verify(token, process.env.EMAIL_SECRET);
+    const user = await User.findById(payload.userId);
+    if (!user) return res.status(400).json({ message: "İstifadəçi tapılmadı" });
+    user.isVerified = true;
+    await user.save();
+    res.json({ message: "Email uğurla təsdiqləndi" });
+  } catch (error) {
+    res.status(400).json({ message: "Token etibarsız və ya müddəti bitib" });
   }
 };

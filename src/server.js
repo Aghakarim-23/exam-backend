@@ -10,6 +10,7 @@ dotenv.config();
 
 connectDB();
 
+
 const app = express();
 const PORT = process.env.PORT || 8001;
 app.use(
@@ -32,5 +33,5 @@ app.use("/api/questions", questionRoutes);
 app.use("/api/auth", authRoutes);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`✅ Server is running on port ${PORT}`);
 });

@@ -25,6 +25,8 @@ const userSchema = new mongoose.Schema({
     enum: ["user", "admin"],
     default: "user",
   },
+  isVerified: { type: Boolean, default: false },
+
   scores: [
     {
       quizId: { type: mongoose.Schema.Types.ObjectId, ref: "Question" },
@@ -33,7 +35,7 @@ const userSchema = new mongoose.Schema({
     },
   ],
   completedQuizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
-  avatar: { type: String }, 
+  avatar: { type: String },
 });
 
 const User = mongoose.model("User", userSchema);
