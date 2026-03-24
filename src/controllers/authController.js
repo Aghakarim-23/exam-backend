@@ -144,12 +144,12 @@ export const requestPasswordReset = async (req, res) => {
 
     const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
 
-    await sendEmail({
-      to: user.email,
-      subject: "Şifrə sıfırlama tələbi",
-      html: `<p>Şifrənizi sıfırlamaq üçün aşağıdakı linkə klik edin:</p><a href="${resetLink}">Şifrəni Sıfırla</a>`,
-    });
-
+    await sendEmail(
+      user.email,
+      "Şifrə sıfırlama tələbi",
+      `<p>Şifrənizi sıfırlamaq üçün aşağıdakı linkə klik edin:</p>
+   <a href="${resetLink}">Şifrəni Sıfırla</a>`,
+    );
     res.json({ message: "Şifrə sıfırlama linki emailinizə göndərildi" });
   } catch (error) {
     console.error("❌ Password reset request error:", error);
