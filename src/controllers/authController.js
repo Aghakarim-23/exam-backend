@@ -37,24 +37,25 @@ export const register = async (req, res) => {
 
     const verifyLink = `${process.env.CLIENT_URL}/verify-email/${verifyToken}`;
 
-    await sendEmail({
-      to: newUser.email,
-      subject: "Email ünvanınızı təsdiqləyin",
-      html: `
-    <div style="font-family: Arial; background:#f3f4f6; padding:40px;">
-      <div style="max-width:520px; margin:0 auto; background:#fff; padding:32px; text-align:center; border-radius:12px;">
-        <h2>Email ünvanınızı təsdiqləyin</h2>
-        <p>Emailinizi təsdiqləmək üçün aşağıdakı düyməyə klik edin:</p>
-        <a href="${verifyLink}" style="display:inline-block; padding:12px 24px; background:#16a34a; color:#fff; border-radius:8px; text-decoration:none;">
-          Emaili təsdiqlə
-        </a>
-        <p style="margin-top:16px; font-size:12px; color:#9ca3af;">
-          Bu link 15 dəqiqədən sonra etibarsız olacaq.
-        </p>
+    await sendEmail(
+      newUser.email,
+      "Email ünvanınızı təsdiqləyin",
+      `
+      <div style="font-family: Arial; background:#f3f4f6; padding:40px;">
+        <div style="max-width:520px; margin:0 auto; background:#fff; padding:32px; text-align:center; border-radius:12px;">
+          <h2>Email ünvanınızı təsdiqləyin</h2>
+          <p>Emailinizi təsdiqləmək üçün aşağıdakı düyməyə klik edin:</p>
+          <a href="${verifyLink}" style="display:inline-block; padding:12px 24px; background:#16a34a; color:#fff; border-radius:8px; text-decoration:none;">
+            Emaili təsdiqlə
+          </a>
+          <p style="margin-top:16px; font-size:12px; color:#9ca3af;">
+            Bu link 15 dəqiqədən sonra etibarsız olacaq.
+          </p>
+        </div>
       </div>
-    </div>
-  `,
-    });
+      `,
+    );
+
     res.status(201).json({
       message: "Qeydiyyat tamamlandı! Zəhmət olmasa emailinizi təsdiqləyin.",
     });
