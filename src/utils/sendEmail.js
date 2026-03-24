@@ -27,7 +27,7 @@ export const sendEmail = async (to, subject, html) => {
     const response = await axios.post(
       "https://api.brevo.com/v3/smtp/email",
       {
-        sender: { email: process.env.SMTP_USER, name: "YourApp" },
+        sender: { email: process.env.SMTP_USER, name: "Exam App" },
         to: [{ email: to }],
         subject: subject,
         htmlContent: html
@@ -40,7 +40,7 @@ export const sendEmail = async (to, subject, html) => {
       }
     );
 
-    console.log("✅ Email göndərildi:", info.response);
+    console.log("✅ Email göndərildi:", response.data);
     return true;
   } catch (err) {
     console.error("❌ Email göndərmə xətası:", err);
