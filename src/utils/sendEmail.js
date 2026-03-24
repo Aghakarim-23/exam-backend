@@ -7,7 +7,7 @@ dotenv.config();
 console.log("SMTP_USER:", process.env.SMTP_USER);
 console.log("SMTP_PASS:", process.env.SMTP_PASS);
 
-const transporter = nodemailer.createTransport({
+/* const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: process.env.SMTP_PORT,
   secure: false,
@@ -20,7 +20,7 @@ const transporter = nodemailer.createTransport({
 transporter.verify((err, success) => {
   if (err) console.error("❌ SMTP verify xətası:", err);
   else console.log("✅ SMTP server işləyir");
-});
+}); */
 
 export const sendEmail = async (to, subject, html) => {
   try {
