@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "../utils/sendEmail.js";
+import crypto from "crypto";
 
 export const register = async (req, res) => {
   try {
@@ -124,5 +125,74 @@ export const confirmEmail = async (req, res) => {
     res.json({ message: "Email uğurla təsdiqləndi" });
   } catch (error) {
     res.status(400).json({ message: "Token etibarsız və ya müddəti bitib" });
+  }
+};
+
+export const requestPasswordReset = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Bu email ilə hesab tapılmadı" });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000;
+    await user.save();
+
+    const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+
+    await sendEmail({
+      to: user.email,
+      subject: "Şifrə sıfırlama tələbi",
+      html: `<p>Şifrənizi sıfırlamaq üçün aşağıdakı linkə klik edin:</p><a href="${resetLink}">Şifrəni Sıfırla</a>`,
+    });
+
+    res.json({ message: "Şifrə sıfırlama linki emailinizə göndərildi" });
+  } catch (error) {
+    console.error("❌ Password reset request error:", error);
+    res.status(500).json({ message: "Server xətası baş verdi" });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  const { token, newPassword, confirmPassword } = req.body;
+
+  try {
+    if (!newPassword) {
+      return res.status(400).json({ message: "Yeni şifrə tələb olunur" });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res
+        .status(400)
+        .json({ message: "Yeni şifrə ilə təsdiq şifrəsi eyni deyil" });
+    }
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Etibarsız və ya müddəti bitmiş token",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+
+    await user.save();
+
+    res.json({ message: "Şifrə uğurla sıfırlandı" });
+  } catch (error) {
+    console.error("❌ Reset password error:", error);
+    res.status(500).json({ message: "Server xətası baş verdi" });
   }
 };
