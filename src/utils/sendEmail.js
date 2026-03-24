@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import axios from "axios";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -21,16 +21,23 @@ transporter.verify((err, success) => {
   else console.log("✅ SMTP server işləyir");
 });
 
-export const sendEmail = async ({ to, subject, html }) => {
+export const sendEmail = async (to, subject, html) => {
   try {
-    console.log("📌 Sending email to:", to);
-
-    const info = await transporter.sendMail({
-      from: `"Aghakarim Hamidzada" <support@aghakarim.info>`,
-      to,
-      subject,
-      html,
-    });
+    const response = await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      {
+        sender: { email: process.env.SMTP_USER, name: "YourApp" },
+        to: [{ email: to }],
+        subject: subject,
+        htmlContent: html
+      },
+      {
+        headers: {
+          "api-key": process.env.BREVO_API_KEY,
+          "Content-Type": "application/json"
+        }
+      }
+    );
 
     console.log("✅ Email göndərildi:", info.response);
     return true;
