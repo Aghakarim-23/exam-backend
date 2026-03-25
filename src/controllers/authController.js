@@ -97,7 +97,9 @@ export const login = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      maxAge: 60 * 60 * 1000, 
+      maxAge: 60 * 60 * 1000,
+      domain: ".exam-backend-tv3e.onrender.com",
+      path: "/",
     });
 
     res.json({
@@ -198,23 +200,25 @@ export const resetPassword = async (req, res) => {
   }
 };
 
-export const me  = async (req, res) => {
+export const me = async (req, res) => {
   try {
     const user = await User.findById(req.user.userId).select("-password");
     if (!user) {
       return res.status(404).json({ message: "İstifadəçi tapılmadı" });
     }
     res.status(200).json({ user });
-    } catch (error) {
-      res.status(500).json({ message: "Server xətası baş verdi" });
+  } catch (error) {
+    res.status(500).json({ message: "Server xətası baş verdi" });
   }
-}
+};
 
 export const logout = (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
     sameSite: "none",
-    secure: true
+    secure: true,
+    domain: ".exam-backend-tv3e.onrender.com",
+    path: "/",
   });
 
   res.json({ message: "Uğurla çıxış edildi" });
