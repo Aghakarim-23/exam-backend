@@ -209,3 +209,13 @@ export const me  = async (req, res) => {
       res.status(500).json({ message: "Server xətası baş verdi" });
   }
 }
+
+export const logout = (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false
+  });
+
+  res.json({ message: "Uğurla çıxış edildi" });
+};
