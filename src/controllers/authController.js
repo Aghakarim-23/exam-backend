@@ -96,8 +96,8 @@ export const login = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
-      sameSite: "strict",
-      maxAge: 60 * 60 * 1000,
+      sameSite: "lax",
+      maxAge: 60 * 60 * 1000, 
     });
 
     res.json({
@@ -197,3 +197,15 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ message: "Server xətası baş verdi" });
   }
 };
+
+export const me  = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "İstifadəçi tapılmadı" });
+    }
+    res.status(200).json({ user });
+    } catch (error) {
+      res.status(500).json({ message: "Server xətası baş verdi" });
+  }
+}
