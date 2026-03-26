@@ -88,22 +88,15 @@ export const login = async (req, res) => {
         .json({ message: "Şifrə səhvdir. Yenidən cəhd edin" });
     }
     const token = jwt.sign(
-      { userId: user._id, role: user.role },
+      { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1h" },
     );
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 60 * 60 * 1000,
-      domain: ".exam-backend-tv3e.onrender.com",
-      path: "/",
-    });
 
     res.json({
       message: "Uğurlu giriş!",
+      token,
       user: {
         id: user._id,
         name: user.name,
@@ -202,7 +195,7 @@ export const resetPassword = async (req, res) => {
 
 export const me = async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select("-password");
+    const user = await User.findById(req.user.id).select("-password");
     if (!user) {
       return res.status(404).json({ message: "İstifadəçi tapılmadı" });
     }
@@ -212,14 +205,3 @@ export const me = async (req, res) => {
   }
 };
 
-export const logout = (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    sameSite: "none",
-    secure: true,
-    domain: ".exam-backend-tv3e.onrender.com",
-    path: "/",
-  });
-
-  res.json({ message: "Uğurla çıxış edildi" });
-};
