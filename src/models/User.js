@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
   ],
   completedQuizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
   avatar: { type: String },
-});
+},{ timestamps: true });
 
 const User = mongoose.model("User", userSchema);
 
