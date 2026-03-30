@@ -94,7 +94,6 @@ export const login = async (req, res) => {
       { expiresIn: "1h" },
     );
 
-
     res.json({
       message: "Uğurlu giriş!",
       token,
@@ -207,3 +206,28 @@ export const me = async (req, res) => {
   }
 };
 
+export const updateProfile = async (req, res) => {
+  try {
+    const id = req.user._id;
+    const { name, surname, username } = req.body;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "İstifadəçi mövcud deyil" });
+    }
+
+    if (name) user.name = name;
+    if (surname) user.surname = surname;
+    if (username) user.username = username;
+
+    await user.save();
+
+    res.json({
+      message: "Profile yeniləndi",
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server xətası baş verdi" });
+  }
+};
