@@ -6,7 +6,7 @@ import crypto from "crypto";
 
 export const register = async (req, res) => {
   try {
-    const { name, username, email, password } = req.body;
+    const { name, surname, username, email, password } = req.body;
 
     const existed = await User.findOne({ email });
     if (existed)
@@ -22,6 +22,7 @@ export const register = async (req, res) => {
 
     const newUser = await User.create({
       name,
+      surname,
       username,
       email,
       password: hashedPassword,
@@ -100,6 +101,7 @@ export const login = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
+        surname: user.surname,
         username: user.username,
         email: user.email,
         role: user.role,
