@@ -254,7 +254,9 @@ export const changePassword = async (req,res) => {
     user.password = await bcrypt.hash(newPassword, 10);
 
     await user.save();
-    
+
+    res.status(200).json({message: "Şifrə uğurla yeniləndi"})
+
   } catch (error) {
     res.status(500).json({ message: "Server xətası baş verdi" });
   }
