@@ -14,16 +14,12 @@ const QuizSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    duration:  Number, // in minutes
+
     difficulty: {
       type: String,
       enum: ["easy", "medium", "hard"],
     },
-    questions: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Question",
-      },
-    ],
     isPublished: {
       type: Boolean,
       default: false,

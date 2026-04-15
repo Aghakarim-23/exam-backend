@@ -5,6 +5,7 @@ import { connectDB } from "./config/db.js";
 import questionRoutes from "./routes/questionRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import cookieParser from "cookie-parser";
+import quizRoutes from "./routes/quizRoutes.js";
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ app.get("/api/keep-alive", (req, res) => {
 
 app.use("/api/questions", questionRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/quizzes", quizRoutes);
 
 app.listen(PORT, () => {
   console.log(`✅ Server is running on port ${PORT}`);
