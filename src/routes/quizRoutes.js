@@ -8,6 +8,7 @@ import {
   togglePublish,
   submitQuiz,
 } from "../controllers/QuizController.js";
+import { getQuestionsByQuizId } from "../controllers/questionController.js";
 
 const router = express.Router();
 
@@ -18,5 +19,6 @@ router.put("/:id", updateQuiz);
 router.delete("/:id", deleteQuiz);
 router.patch("/:id/publish", togglePublish);
 router.post("/:id/submit", submitQuiz);
+router.get("/:quizId/questions", getQuestionsByQuizId);
 
 export default router;

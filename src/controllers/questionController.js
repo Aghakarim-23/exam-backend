@@ -14,9 +14,6 @@ export const createQuestion = async (req, res) => {
 
     await newQuestion.save();
 
-    await Quiz.findByIdAndUpdate(quizId, {
-      $push: { questions: newQuestion._id },
-    });
 
     res.status(201).json(newQuestion);
   } catch (error) {
@@ -44,6 +41,7 @@ export const getQuestionsByQuizId = async (req, res) => {
     res.status(200).json({ questions, total: questions.length });
   } catch (error) {
     res.status(500).json({ message: error.message });
+    console.error("Error bas verdi", error);
   }
 };
 
