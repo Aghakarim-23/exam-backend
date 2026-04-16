@@ -9,6 +9,7 @@ import {
   submitQuiz,
 } from "../controllers/QuizController.js";
 import { getQuestionsByQuizId } from "../controllers/questionController.js";
+import { authMiddleware } from "../middlewares/authMiddleWare.js";
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ router.get("/:id", getQuizById);
 router.put("/:id", updateQuiz);
 router.delete("/:id", deleteQuiz);
 router.patch("/:id/publish", togglePublish);
-router.post("/:id/submit", submitQuiz);
+router.post("/:id/submit", authMiddleware, submitQuiz);
 router.get("/:quizId/questions", getQuestionsByQuizId);
 
 export default router;

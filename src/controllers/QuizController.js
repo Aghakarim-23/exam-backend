@@ -109,21 +109,22 @@ export const submitQuiz = async (req, res) => {
     const { answers } = req.body;
     // answers: [{ questionId, selectedOption }]
 
-    const quiz = await Quiz.findById(req.params.id).populate("questions");
+    const quiz = await Quiz.findById(req.params.id);
 
     if (!quiz) {
       return res.status(404).json({ message: "Quiz not found" });
     }
 
+    const questions = await Question.find({ quizId: req.params.id });
+
     const questionMap = new Map(
-      quiz.questions.map((q) => [q._id.toString(), q])
+      questions.map((q) => [q._id.toString(), q])
     );
 
     let score = 0;
     const evaluatedAnswers = answers.map(({ questionId, selectedOption }) => {
       const question = questionMap.get(questionId);
-      const isCorrect =
-        question && question.correctAnswer === selectedOption;
+      const isCorrect = question && question.correctAnswer === selectedOption;
       if (isCorrect) score++;
       return { question: questionId, selectedOption, isCorrect: !!isCorrect };
     });
@@ -139,7 +140,7 @@ export const submitQuiz = async (req, res) => {
 
     res.status(201).json({
       score,
-      total: quiz.questions.length,
+      total: questions.length,
       answers: evaluatedAnswers,
     });
   } catch (error) {
