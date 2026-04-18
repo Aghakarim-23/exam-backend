@@ -9,6 +9,7 @@ import {
   submitQuiz,
 } from "../controllers/QuizController.js";
 import { getQuestionsByQuizId } from "../controllers/questionController.js";
+import { getResultsByQuiz } from "../controllers/resultController.js";
 import { authMiddleware } from "../middlewares/authMiddleWare.js";
 
 const router = express.Router();
@@ -21,5 +22,6 @@ router.delete("/:id", deleteQuiz);
 router.patch("/:id/publish", togglePublish);
 router.post("/:id/submit", authMiddleware, submitQuiz);
 router.get("/:quizId/questions", getQuestionsByQuizId);
+router.get("/:id/results", authMiddleware, getResultsByQuiz);
 
 export default router;

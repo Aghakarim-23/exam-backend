@@ -6,6 +6,8 @@ import questionRoutes from "./routes/questionRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import cookieParser from "cookie-parser";
 import quizRoutes from "./routes/quizRoutes.js";
+import resultRoutes from "./routes/resultRoutes.js";
+import statsRoutes from "./routes/statsRoutes.js";
 
 dotenv.config();
 
@@ -34,6 +36,8 @@ app.get("/api/keep-alive", (req, res) => {
 app.use("/api/questions", questionRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/quizzes", quizRoutes);
+app.use("/api/results", resultRoutes);
+app.use("/api/stats", statsRoutes);
 
 app.listen(PORT, () => {
   console.log(`✅ Server is running on port ${PORT}`);
