@@ -5,9 +5,19 @@ import { Result } from "../models/Result.js";
 // POST /quizzes
 export const createQuiz = async (req, res) => {
   try {
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({ message: "Quiz yaratmağa icazən yoxdur" });
+    }
+
     const { title, description, category, duration, difficulty } = req.body;
 
-    const quiz = new Quiz({ title, description, category, duration, difficulty });
+    const quiz = new Quiz({
+      title,
+      description,
+      category,
+      duration,
+      difficulty,
+    });
     await quiz.save();
 
     res.status(201).json(quiz);
@@ -20,7 +30,7 @@ export const createQuiz = async (req, res) => {
 // GET /quizzes
 export const getQuizzes = async (req, res) => {
   try {
-    const quizzes = await Quiz.find().sort({ createdAt: -1 });;
+    const quizzes = await Quiz.find().sort({ createdAt: -1 });
     res.status(200).json({ quizzes });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -55,7 +65,7 @@ export const updateQuiz = async (req, res) => {
     const quiz = await Quiz.findByIdAndUpdate(
       req.params.id,
       { title, description, category, difficulty },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!quiz) {
@@ -75,6 +85,10 @@ export const deleteQuiz = async (req, res) => {
 
     if (!quiz) {
       return res.status(404).json({ message: "Quiz not found" });
+    }
+
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({ message: "Bu əməliyyata icazən yoxdur" });
     }
 
     await Question.deleteMany({ quiz: req.params.id });
@@ -117,9 +131,7 @@ export const submitQuiz = async (req, res) => {
 
     const questions = await Question.find({ quizId: req.params.id });
 
-    const questionMap = new Map(
-      questions.map((q) => [q._id.toString(), q])
-    );
+    const questionMap = new Map(questions.map((q) => [q._id.toString(), q]));
 
     let score = 0;
     const evaluatedAnswers = answers.map(({ questionId, selectedOption }) => {

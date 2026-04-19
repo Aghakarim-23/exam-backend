@@ -209,26 +209,25 @@ export const me = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const id = req.user.id;
-    
+
     const user = await User.findById(id);
 
-    const {name, surname, username} = req.body;
+    const { name, surname, username } = req.body;
 
-    if(!user) {
-      return res.statu(404).json({message: "İstifadəçi mövcud deyil"})
+    if (!user) {
+      return res.statu(404).json({ message: "İstifadəçi mövcud deyil" });
     }
 
-    if(name) user.name = name;
-    if(surname) user.surname = surname;
-    if(username) user.username = username;
+    if (name) user.name = name;
+    if (surname) user.surname = surname;
+    if (username) user.username = username;
 
     await user.save();
 
     res.json({
       message: "Profil yeniləndi",
-      user
-    })
-
+      user,
+    });
   } catch (error) {
     res.status(500).json({ message: "Server xətası baş verdi" });
   }
@@ -236,37 +235,42 @@ export const updateProfile = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password -resetPasswordToken -resetPasswordExpires");
+    const users = await User.find().select(
+      "-password -resetPasswordToken -resetPasswordExpires",
+    );
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({ message: "Bu əməliyyata icazən yoxdur" });
+    }
+
     res.status(200).json({ users });
   } catch (error) {
     res.status(500).json({ message: "Server xətası baş verdi" });
   }
 };
 
-export const changePassword = async (req,res) => {
+export const changePassword = async (req, res) => {
   try {
     const userId = req.user.id;
     const { currentPassword, newPassword } = req.body;
 
     const user = await User.findById(userId);
 
-    if(!user) {
-      return res.status(404).json({message: "İstifadəçi mövcud deyil"});
+    if (!user) {
+      return res.status(404).json({ message: "İstifadəçi mövcud deyil" });
     }
 
     const isMatch = await bcrypt.compare(currentPassword, user.password);
 
-    if(!isMatch) {
-      return res.status(400).json({message: "Cari şifrə düzgün deyil"})
+    if (!isMatch) {
+      return res.status(400).json({ message: "Cari şifrə düzgün deyil" });
     }
 
     user.password = await bcrypt.hash(newPassword, 10);
 
     await user.save();
 
-    res.status(200).json({message: "Şifrə uğurla yeniləndi"})
-
+    res.status(200).json({ message: "Şifrə uğurla yeniləndi" });
   } catch (error) {
     res.status(500).json({ message: "Server xətası baş verdi" });
   }
-}
+};
