@@ -234,6 +234,15 @@ export const updateProfile = async (req, res) => {
   }
 };
 
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password -resetPasswordToken -resetPasswordExpires");
+    res.status(200).json({ users });
+  } catch (error) {
+    res.status(500).json({ message: "Server xətası baş verdi" });
+  }
+};
+
 export const changePassword = async (req,res) => {
   try {
     const userId = req.user.id;

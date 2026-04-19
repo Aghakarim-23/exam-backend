@@ -1,5 +1,5 @@
 import express from 'express';
-import {register, login, confirmEmail, requestPasswordReset, resetPassword, me, updateProfile, changePassword} from '../controllers/authController.js';
+import {register, login, confirmEmail, requestPasswordReset, resetPassword, me, updateProfile, changePassword, getAllUsers} from '../controllers/authController.js';
 import { authMiddleware } from '../middlewares/authMiddleWare.js';
 
 const router = express.Router();
@@ -19,5 +19,7 @@ router.get("/me", authMiddleware, me);
 router.patch("/update-profile", authMiddleware, updateProfile)
 
 router.patch("/change-password", authMiddleware, changePassword)
+
+router.get("/users", authMiddleware, getAllUsers);
 
 export default router;
